@@ -16,7 +16,9 @@
   <target name="compile">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${src.dir}" destdir="${classes.dir}"
-	   includeantruntime="false" classpathref="classpath"/>
+	   includeantruntime="false" classpathref="classpath">
+      <compilerarg value="-Xlint"/>
+    </javac>
     <copy file="${src.dir}/plugins.config" todir="${classes.dir}"/>
   </target>
 
