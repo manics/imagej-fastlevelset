@@ -45,12 +45,11 @@ public class SpeedFieldFactory {
 			IJ.log("ChanVeseSpeedField");
 		}
 
-		public int computeSpeed(FastLevelSet.Byte2D phi, FastLevelSet.Point p) {
+		public int computeSpeed(FastLevelSet.Byte2D phi, Point p) {
 			return getFLSSpeed(computeSpeedD(phi, p));
 		}
 
-		public double computeSpeedD(FastLevelSet.Byte2D phi,
-									FastLevelSet.Point p) {
+		public double computeSpeedD(FastLevelSet.Byte2D phi, Point p) {
 			// F = (I - u1)^2 - (I - u2)^2
 			//   = I^2 - 2Iu1 + u1^2 - I^2 + 2Iu2 -u2^2
 			//   = -2I(u1 - u2) + (u1^2 - u2^2)
@@ -67,18 +66,18 @@ public class SpeedFieldFactory {
 			return in2out.size() > 0 || out2in.size() > 0;
 		}
 
-		public void switchOut(FastLevelSet.Point p) {
+		public void switchOut(Point p) {
 			assert p.x < im.getWidth() && p.y < im.getHeight();
 			in2out.addFirst(p);
 		}
 
-		public void switchIn(FastLevelSet.Point p) {
+		public void switchIn(Point p) {
 			assert p.x < im.getWidth() && p.y < im.getHeight();
 			out2in.addFirst(p);
 		}
 
 		public void updateSpeedChanges() {
-			for (FastLevelSet.Point p : in2out) {
+			for (Point p : in2out) {
 				--ain;
 				++aout;
 				tin -= im.get(p.x, p.y);
@@ -86,7 +85,7 @@ public class SpeedFieldFactory {
 			}
 			in2out.clear();
 
-			for (FastLevelSet.Point p : out2in) {
+			for (Point p : out2in) {
 				++ain;
 				--aout;
 				tin += im.get(p.x, p.y);
@@ -131,14 +130,12 @@ public class SpeedFieldFactory {
 		/**
 		 * Current list of points which have moved from inside to outside
 		 */
-		private LinkedList<FastLevelSet.Point> in2out =
-			new LinkedList<FastLevelSet.Point>();
+		private LinkedList<Point> in2out = new LinkedList<Point>();
 
 		/**
 		 * Current list of points which have moved from outside to inside
 		 */
-		private LinkedList<FastLevelSet.Point> out2in =
-			new LinkedList<FastLevelSet.Point>();
+		private LinkedList<Point> out2in = new LinkedList<Point>();
 
 		/**
 		 * Total inside intensity
@@ -220,12 +217,11 @@ public class SpeedFieldFactory {
 			}
 		}
 
-		public int computeSpeed(FastLevelSet.Byte2D phi, FastLevelSet.Point p) {
+		public int computeSpeed(FastLevelSet.Byte2D phi, Point p) {
 			return getFLSSpeed(computeSpeedD(phi, p));
 		}
 
-		public double computeSpeedD(FastLevelSet.Byte2D phi,
-									FastLevelSet.Point p) {
+		public double computeSpeedD(FastLevelSet.Byte2D phi, Point p) {
 			int cr = params.neighbourhoodRadius;
 			int pmaxx = Math.min(p.x + cr, filt.getWidth());
 			int pmaxy = Math.min(p.y + cr, filt.getHeight());

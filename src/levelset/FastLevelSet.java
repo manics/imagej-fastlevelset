@@ -49,31 +49,6 @@ public class FastLevelSet {
 	}
 
 	/**
-	 * A 2D coordinate
-	 */
-	protected class Point {
-		/**
-		 * X coordinate
-		 */
-		public int x;
-
-		/**
-		 * Y coordinate
-		 */
-		public int y;
-
-		/**
-		 * Constructor
-		 * @param x The X coordinate
-		 * @param y The Y coordinate
-		 */
-		public Point(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-
-	/**
 	 * A 2D array which holds signed values
 	 */
 	protected class Byte2D {

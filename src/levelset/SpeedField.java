@@ -28,7 +28,7 @@ public abstract class SpeedField {
      * @param p The point
      * @return The speed at the point: [-1 0 1]
      */
-	abstract int computeSpeed(FastLevelSet.Byte2D phi, FastLevelSet.Point p);
+	abstract int computeSpeed(FastLevelSet.Byte2D phi, Point p);
 
     /**
      * Compute the speed at a single point
@@ -36,8 +36,7 @@ public abstract class SpeedField {
      * @param p The point
      * @return The speed at the point as a double
      */
-	abstract double computeSpeedD(FastLevelSet.Byte2D phi,
-								  FastLevelSet.Point p);
+	abstract double computeSpeedD(FastLevelSet.Byte2D phi, Point p);
 
     /**
      * Does this speed field need to be updated with changed points?
@@ -51,14 +50,14 @@ public abstract class SpeedField {
      * Notify the speed field that a point has moved from inside to outside
      * @param p The point which has moved from inside to outside
      */
-	void switchOut(FastLevelSet.Point p) {
+	void switchOut(Point p) {
 	}
 
     /**
      * Notify the speed field that a point has moved from outside to inside
      * @param p The point which has moved from outside to inside
      */
-	void switchIn(FastLevelSet.Point p) {
+	void switchIn(Point p) {
 	}
 
     /**
