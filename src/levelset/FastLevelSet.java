@@ -1,7 +1,6 @@
 package levelset;
 
 import ij.IJ;
-//import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
 
 import java.util.List;
@@ -21,6 +20,10 @@ import java.util.Iterator;
  *
  */
 public class FastLevelSet {
+
+	/**
+	 * Parameters for the fast level set algorithm
+	 */
 	public static class Parameters {
         /**
          * Number of speed evolutions
@@ -77,15 +80,31 @@ public class FastLevelSet {
 			vals = new byte[w * h];
 		}
 
+		/**
+		 * Get an element by column-row indices
+		 * @param x The x coordinate
+		 * @param y The y coordinate
+		 * @return The value of the element
+		 */
 		public byte get(int x, int y) {
 			return vals[y * width + x];
 		}
 
+		/**
+		 * Set an element by column-row indices
+		 * @param x The x coordinate
+		 * @param y The y coordinate
+		 * @param v The value of the element
+		 */
 		public void set(int x, int y, byte v) {
 			vals[y * width + x] = v;
 		}
 	}
 
+	/**
+	 * Controls whether a self-consistency check is performed at every step
+	 * (very slow, for testing only)
+	 */
 	public final boolean DEBUG_CHECK = false;
 
     /**
@@ -165,7 +184,7 @@ public class FastLevelSet {
 	 * @param params Parameters for the level set algorithm
      * @param im The image to be segmented
      * @param init The binary initialisation
-     * @param speedfield The speed field
+     * @param speedf The speed field
 	 */
 	public FastLevelSet(Parameters params, ImageProcessor im,
 						BinaryProcessor init, SpeedField speedf) {
@@ -213,7 +232,6 @@ public class FastLevelSet {
 					   (nSpeedIts + 1) + "/" + params.speedIterations);
 
 				evolveSpeed();
-				//dbPrintf("Phi\n%s\n", LevelSetDisplay::phiString(m_phi).c_str());
 				checkConsistency();
 				converged = hasConverged();
 				if(converged) {
@@ -244,7 +262,6 @@ public class FastLevelSet {
 					   + (nSmoothIts + 1) + "/" + params.smoothIterations);
 
 				evolveSmooth();
-				//dbPrintf("Phi\n%s\n", LevelSetDisplay::phiString(m_phi).c_str());
 				checkConsistency();
 
 				if (escapePressed()) {
@@ -408,7 +425,6 @@ public class FastLevelSet {
 		cleanLin();
 		cleanLout();
 
-		//dbPrintf("Phi\n%s\n", LevelSetDisplay::phiString(m_phi).c_str());
 		checkConsistency();
 
 		if (params.smoothIterations > 0) {
@@ -444,10 +460,6 @@ public class FastLevelSet {
 			}
 		}
 		gaussFilterThreshold = gfScale / 2;
-
-		//dbPrintf("Gauss Filter\n%s\n", LevelSetDisplay::imageToString
-		//		 <LevelSetDisplay::Numeric<int,1,3> >(m_gaussFilter).c_str());
-		//dbPrintf("Gauss filter threshold: %d\n", m_gaussFilterThreshold);
 	}
 
     /**
@@ -790,8 +802,6 @@ public class FastLevelSet {
      * Clean up Lin
      */
     private void cleanLin() {
-		//dbPrintf("Cleaning Lin\n");
-
 		Iterator<Point> pi = lin.iterator();
 		while (pi.hasNext()) {
 			Point p = pi.next();
@@ -819,8 +829,6 @@ public class FastLevelSet {
      * Clean up Lout
      */
     private void cleanLout() {
-		//dbPrintf("Cleaning Lout\n");
-
 		Iterator<Point> pi = lout.iterator();
 		while (pi.hasNext()) {
 			Point p = pi.next();
