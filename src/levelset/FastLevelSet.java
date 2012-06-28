@@ -25,27 +25,27 @@ public class FastLevelSet {
         /**
          * Number of speed evolutions
          */
-        int speedIterations;
+        public int speedIterations;
 
         /**
          * Number of smoothing evolutions
          */
-        int smoothIterations;
+        public int smoothIterations;
 
         /**
          * Maximum number of iterations
          */
-        int maxIterations;
+        public int maxIterations;
 
         /**
          * Radius of the Gaussian filter
          */
-        int gaussWidth;
+        public int gaussWidth;
 
         /**
          * Sigma for the Gaussian filter
          */
-        double gaussSigma;
+        public double gaussSigma;
 	}
 
 	/**
@@ -167,8 +167,8 @@ public class FastLevelSet {
      * @param init The binary initialisation
      * @param speedfield The speed field
 	 */
-	FastLevelSet(Parameters params, ImageProcessor im, BinaryProcessor init,
-				 SpeedField speedf) {
+	public FastLevelSet(Parameters params, ImageProcessor im,
+						BinaryProcessor init, SpeedField speedf) {
 		this.params = params;
 		size = new Point(im.getWidth(), im.getHeight());
 
@@ -194,7 +194,7 @@ public class FastLevelSet {
      * Segment the image, subject to the maximum iterations
 	 * @return true if segmentation completed, false otherwise
      */
-	protected boolean segment() {
+	public boolean segment() {
 		boolean converged = false;
 
 		IJ.log("speedIterations:" + params.speedIterations +
@@ -337,7 +337,7 @@ public class FastLevelSet {
      * Gets the level-set function phi
      * @return phi
      */
-    Byte2D getPhi() {
+    public Byte2D getPhi() {
 		return phi;
 	}
 
@@ -345,7 +345,7 @@ public class FastLevelSet {
      * Gets a binary segmentation from phi
      * @return the segmented image
      */
-	BinaryProcessor getSegmentation() {
+	public BinaryProcessor getSegmentation() {
 		BinaryProcessor seg = new BinaryProcessor(
 			new ByteProcessor(size.x, size.y));
 		for(int y = 0; y < size.y; ++y) {
