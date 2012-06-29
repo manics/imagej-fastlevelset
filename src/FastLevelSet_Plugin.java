@@ -44,13 +44,14 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 			stack.getWidth(), stack.getHeight());
 
 
-		FastLevelSet.Parameters params = defaultParams();
-		if (!getUserParameters(params)) {
+		FastLevelSet.Parameters lsparams = defaultLevelSetParams();
+		HybridSpeedField.Parameters hsfparams = defaultHybridParams();
+		StringBuilder sfmethod = new StringBuilder();
+
+		if (!getUserParameters(lsparams, sfmethod, hsfparams)) {
 			IJ.log("Plugin cancelled");
 			return;
 		}
-		SpeedFieldFactory.SFMethod sf =
-			SpeedFieldFactory.SFMethod.CHAN_VESE;
 
 		try {
 			// stack.getProcessor(i) uses 1-based indexing
@@ -61,7 +62,8 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 				ImageProcessor im = stack.getProcessor(i);
 				BinaryProcessor init = initFromMean(im, false);
-				BinaryProcessor seg = levelset(params, im, init, sf);
+				BinaryProcessor seg = levelset(lsparams, im, init,
+											   sfmethod.toString(), hsfparams);
 
 				segstack.addSlice(seg);
 				tmpstack.addSlice(init);
@@ -85,7 +87,9 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 	 *        fields will be changed to any user selected parameters
 	 * @return true if the user clicked OK, false if cancelled
 	 */
-	protected boolean getUserParameters(FastLevelSet.Parameters params) {
+	protected boolean getUserParameters(FastLevelSet.Parameters lsp,
+										StringBuilder sfmethod,
+										HybridSpeedField.Parameters hsfp) {
 		GenericDialog gd = new GenericDialog("Fast level set settings");
 		gd.addMessage(
 		/*123456789012345678901234567890123456789012345678901234567890*/
@@ -98,42 +102,45 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		 "the smoothness of the segmentation boundary, and vice-versa.\n" +
 		 "The greater the number of iterations the longer this\n" +
 		 "algorithm will take to run.");
-		gd.addNumericField("Iterations", params.maxIterations, 0);
-		gd.addNumericField("Speed_sub-iterations", params.speedIterations, 0);
-		gd.addNumericField("Smooth_sub-iterations", params.smoothIterations, 0);
+		gd.addNumericField("Iterations", lsp.maxIterations, 0);
+		gd.addNumericField("Speed_sub-iterations", lsp.speedIterations, 0);
+		gd.addNumericField("Smooth_sub-iterations", lsp.smoothIterations, 0);
 
 		// I've never had to change these two
-		//gd.addNumericField("Smoothing_kernel_width", params.gaussWidth, 0);
-		//gd.addNumericField("Smoothing_kernel_sigma", params.gaussSigma, 2);
+		//gd.addNumericField("Smoothing_kernel_width", lsp.gaussWidth, 0);
+		//gd.addNumericField("Smoothing_kernel_sigma", lsp.gaussSigma, 2);
 
 		gd.addCheckbox("Display_progress", false);
 
-		String choices[] = {"Chan Vese", "Hybrid"};
-		gd.addChoice("Field_type", choices, choices[0]);
+		List<String> sfmethods = new LinkedList<String>();
+		for (SpeedFieldFactory.SfMethod e :
+				 SpeedFieldFactory.SfMethod.values()) {
+			sfmethods.add(e.toString());
+		}
+
+		gd.addChoice("Field_type", sfmethods.toArray(new String[0]),
+					 sfmethods.get(0));
 
 		gd.addMessage("Hybrid speed field parameters");
-		gd.addNumericField("Local radius", 16, 0);
+		gd.addNumericField("Local_radius", hsfp.neighbourhoodRadius, 0);
+		//gd.addNumericField("Intensity_cut-off", hsfp.cutoffIntensity, 0);
 
 		gd.showDialog();
 		if (gd.wasCanceled()) {
 			return false;
 		}
 
-		params.maxIterations = (int)gd.getNextNumber();
-		params.speedIterations = (int)gd.getNextNumber();
-		params.smoothIterations = (int)gd.getNextNumber();
-		//params.gaussWidth = (int)gd.getNextNumber();
-		//params.gaussSigma = gd.getNextNumber();
+		lsp.maxIterations = (int)gd.getNextNumber();
+		lsp.speedIterations = (int)gd.getNextNumber();
+		lsp.smoothIterations = (int)gd.getNextNumber();
+		//lsp.gaussWidth = (int)gd.getNextNumber();
+		//lsp.gaussSigma = gd.getNextNumber();
 
 		boolean plotProgress = gd.getNextBoolean();
 
-		int field = gd.getNextChoiceIndex();
-		if (field != 0) {
-			IJ.error("Invalid choice");
-			return false;
-		}
+		sfmethod.append(sfmethods.get(gd.getNextChoiceIndex()));
 
-		int cr = (int)gd.getNextNumber();
+		hsfp.neighbourhoodRadius = (int)gd.getNextNumber();
 
 		return true;
 	}
@@ -183,13 +190,24 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 	 * Default fast level set parameters
 	 * @return default parameters
 	 */
-	protected FastLevelSet.Parameters defaultParams() {
+	protected FastLevelSet.Parameters defaultLevelSetParams() {
 		FastLevelSet.Parameters params = new FastLevelSet.Parameters();
 		params.speedIterations = 5;
         params.smoothIterations = 2;
         params.maxIterations = 10;
         params.gaussWidth = 7;
         params.gaussSigma = 3;
+		return params;
+	}
+
+	/**
+	 * Default hybrid speed field parameters
+	 * @return default parameters
+	 */
+	HybridSpeedField.Parameters defaultHybridParams() {
+		HybridSpeedField.Parameters params = new HybridSpeedField.Parameters();
+		params.neighbourhoodRadius = 16;
+		params.cutoffIntensity = 0;
 		return params;
 	}
 
@@ -201,17 +219,16 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 	 * @param sf The method to use for calculating the speed field
 	 * @return The binary segmentation
 	 */
-	protected BinaryProcessor levelset(
-		FastLevelSet.Parameters params, ImageProcessor im,
-		BinaryProcessor init, SpeedFieldFactory.SFMethod sf) {
-
+	protected BinaryProcessor levelset(FastLevelSet.Parameters params,
+									   ImageProcessor im, BinaryProcessor init,
+									   String sfmethod,
+									   HybridSpeedField.Parameters hsfp) {
 		assert params != null;
 		assert im != null;
 		assert init != null;
-		SpeedField speed = SpeedFieldFactory.create(sf, im, init);
+		SpeedField speed = SpeedFieldFactory.create(sfmethod, im, init, hsfp);
 
 		FastLevelSet fls = new FastLevelSet(params, im, init, speed);
-
 		fls.addIterationListener(new ProgressReporter());
 
 		if (lsDisplay == null) {

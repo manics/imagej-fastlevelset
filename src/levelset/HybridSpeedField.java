@@ -17,12 +17,12 @@ public class HybridSpeedField extends SpeedField {
 		/**
 		 * Radius of local region
 		 */
-		int neighbourhoodRadius;
+		public int neighbourhoodRadius;
 
 		/**
 		 * Filter out intensities above this level, 0 means ignore
 		 */
-		int cutoffIntensity;
+		public int cutoffIntensity;
 	}
 
 	/**
