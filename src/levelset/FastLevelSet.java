@@ -178,6 +178,12 @@ public class FastLevelSet {
     protected int nhSize;
 
 	/**
+	 * List of classes to notify of iteration progress
+	 */
+	protected List<LevelSetIterationListener> iterationListerners =
+		new LinkedList<LevelSetIterationListener>();
+
+	/**
 	 * Constructor.
 	 * Setup the intermediate matrices.
      * Initialise phi and the gaussian filter.
@@ -233,6 +239,9 @@ public class FastLevelSet {
 
 				evolveSpeed();
 				checkConsistency();
+				notifySpeed(nIts + 1, params.maxIterations, nSpeedIts + 1,
+							params.speedIterations);
+
 				converged = hasConverged();
 				if(converged) {
 					// Always do at least two iterations
@@ -263,11 +272,15 @@ public class FastLevelSet {
 
 				evolveSmooth();
 				checkConsistency();
+				notifySmooth(nIts + 1, params.maxIterations, nSmoothIts + 1,
+							params.smoothIterations);
 
 				if (escapePressed()) {
 					return false;
 				}
 			}
+
+			notifyFull(nIts + 1, params.maxIterations);
 
 			if (converged) {
 				break;
@@ -849,6 +862,40 @@ public class FastLevelSet {
 				removeFromList(pi, p, ListType.OUT, (byte)3);
 				assert phi.get(p.x, p.y) == 3;
 			}
+		}
+	}
+
+	/**
+	 * Add a class to be notified of iterations
+	 */
+	public void addIterationListener(LevelSetIterationListener li) {
+		iterationListerners.add(li);
+	}
+
+	/**
+	 * Notify listeners of a completed full iteration
+	 */
+	protected void notifyFull(int full, int fullT) {
+		for (LevelSetIterationListener li : iterationListerners) {
+			li.fullIteration(full, fullT);
+		}
+	}
+
+	/**
+	 * Notify listeners of a completed speed iteration
+	 */
+	protected void notifySpeed(int full, int fullT, int speed, int speedT) {
+		for (LevelSetIterationListener li : iterationListerners) {
+			li.speedIteration(full, fullT, speed, speedT);
+		}
+	}
+
+	/**
+	 * Notify listeners of a completed smooth iteration
+	 */
+	protected void notifySmooth(int full, int fullT, int smooth, int smoothT) {
+		for (LevelSetIterationListener li : iterationListerners) {
+			li.smoothIteration(full, fullT, smooth, smoothT);
 		}
 	}
 
