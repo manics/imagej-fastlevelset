@@ -21,7 +21,15 @@ import java.util.Iterator;
  */
 public class FastLevelSet_Plugin implements PlugInFilter {
 
+	/**
+	 * The image to be segmented
+	 */
 	protected ImagePlus imp;
+
+	/**
+	 * The window for displaying intermediate level set results
+	 */
+	gui.LevelSetListDisplay lsDisplay = null;
 
 	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
@@ -205,6 +213,15 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		FastLevelSet fls = new FastLevelSet(params, im, init, speed);
 
 		fls.addIterationListener(new ProgressReporter());
+
+		if (lsDisplay == null) {
+			lsDisplay = new gui.LevelSetListDisplay(im, true);
+		}
+		else {
+			lsDisplay.setBackground(im);
+		}
+
+		fls.addListListener(lsDisplay);
 		boolean b = fls.segment();
 
 		if (!b) {
