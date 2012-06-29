@@ -46,8 +46,10 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 		try {
 			// stack.getProcessor(i) uses 1-based indexing
-			for (int i = 1; i <= stack.getSize(); ++i) {
+			int stackSize = stack.getSize();
+			for (int i = 1; i <= stackSize; ++i) {
 				IJ.log("Processing slice " + i);
+				IJ.showStatus("Processing slice " + i + "/" + stackSize);
 
 				ImageProcessor im = stack.getProcessor(i);
 				BinaryProcessor init = initFromMean(im, false);
@@ -128,6 +130,24 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		return true;
 	}
 
+	protected class ProgressReporter implements LevelSetIterationListener {
+		public void fullIteration(int full, int fullT) {
+			//IJ.log("Completed iteration: " + full + "/" + fullT);
+			IJ.showProgress((double)full / (double)fullT);
+		}
+
+		public void speedIteration(int full, int fullT, int speed, int speedT) {
+			//IJ.log("\tCompleted speed: [" + full + "]" +
+			//speed + "/" + speedT);
+		}
+
+		public void smoothIteration(int full, int fullT,
+									int smooth, int smoothT) {
+			//IJ.log("\tCompleted smooth: [" + full + "]" +
+			//smooth + "/" + smoothT);
+		}
+	}
+
 	/**
 	 * Create an initialisation by labelling pixels with intensity greater than
 	 * the mean as foreground
@@ -183,6 +203,8 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		SpeedField speed = SpeedFieldFactory.create(sf, im, init);
 
 		FastLevelSet fls = new FastLevelSet(params, im, init, speed);
+
+		fls.addIterationListener(new ProgressReporter());
 		boolean b = fls.segment();
 
 		if (!b) {
