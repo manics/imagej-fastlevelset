@@ -36,6 +36,21 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		return DOES_8G + DOES_16 + DOES_32;
 	}
 
+	/**
+	 * Additional plugin parameters
+	 */
+	protected class AdditionalParameters {
+		/**
+		 * The speed field method
+		 */
+		public String sfmethod;
+
+		/**
+		 * Should each iteration of the level set be plotted?
+		 */
+		public boolean plotProgress;
+	}
+
 	public void run(ImageProcessor ip) {
 		ImageStack stack = imp.getStack();
 		ImageStack segstack = new ImageStack(
@@ -46,9 +61,9 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 		FastLevelSet.Parameters lsparams = defaultLevelSetParams();
 		HybridSpeedField.Parameters hsfparams = defaultHybridParams();
-		StringBuilder sfmethod = new StringBuilder();
+		AdditionalParameters addparams = new AdditionalParameters();
 
-		if (!getUserParameters(lsparams, sfmethod, hsfparams)) {
+		if (!getUserParameters(lsparams, hsfparams, addparams)) {
 			IJ.log("Plugin cancelled");
 			return;
 		}
@@ -62,8 +77,8 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 				ImageProcessor im = stack.getProcessor(i);
 				BinaryProcessor init = initFromMean(im, false);
-				BinaryProcessor seg = levelset(lsparams, im, init,
-											   sfmethod.toString(), hsfparams);
+				BinaryProcessor seg = levelset(lsparams, im, init, hsfparams,
+											   addparams);
 
 				segstack.addSlice(seg);
 				tmpstack.addSlice(init);
@@ -83,13 +98,16 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 	/**
 	 * Show a dialog to request user parameters for the segmentation
 	 * algorithm
-	 * @param The parameters object which must hold default values, and whose
-	 *        fields will be changed to any user selected parameters
+	 * @lsp The FastLevelSet parameters object which must hold default
+	 *      values, will be updated with any changed parameters
+	 * @hsfp The HybridSpeedField parameters object which must hold default
+	 *       values, will be updated with any changed parameters
+	 * @adp Additional algorithm/plugin parameters, no defaults required
 	 * @return true if the user clicked OK, false if cancelled
 	 */
 	protected boolean getUserParameters(FastLevelSet.Parameters lsp,
-										StringBuilder sfmethod,
-										HybridSpeedField.Parameters hsfp) {
+										HybridSpeedField.Parameters hsfp,
+										AdditionalParameters adp) {
 		GenericDialog gd = new GenericDialog("Fast level set settings");
 		gd.addMessage(
 		/*123456789012345678901234567890123456789012345678901234567890*/
@@ -110,7 +128,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		//gd.addNumericField("Smoothing_kernel_width", lsp.gaussWidth, 0);
 		//gd.addNumericField("Smoothing_kernel_sigma", lsp.gaussSigma, 2);
 
-		gd.addCheckbox("Display_progress", false);
+		gd.addCheckbox("Display_progress (may be slower)", true);
 
 		List<String> sfmethods = new LinkedList<String>();
 		for (SpeedFieldFactory.SfMethod e :
@@ -136,9 +154,9 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		//lsp.gaussWidth = (int)gd.getNextNumber();
 		//lsp.gaussSigma = gd.getNextNumber();
 
-		boolean plotProgress = gd.getNextBoolean();
+		adp.plotProgress = gd.getNextBoolean();
 
-		sfmethod.append(sfmethods.get(gd.getNextChoiceIndex()));
+		adp.sfmethod = sfmethods.get(gd.getNextChoiceIndex());
 
 		hsfp.neighbourhoodRadius = (int)gd.getNextNumber();
 
@@ -216,29 +234,36 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 	 * @param params The fast level set parameters
 	 * @param im The image to be segmented
 	 * @param init The binary initialisation
-	 * @param sf The method to use for calculating the speed field
+	 * @param hsfp The hybrid speed field parameters (may be null)
+	 * @params addparams Additional algorithm/plugin parameters
 	 * @return The binary segmentation
 	 */
 	protected BinaryProcessor levelset(FastLevelSet.Parameters params,
 									   ImageProcessor im, BinaryProcessor init,
-									   String sfmethod,
-									   HybridSpeedField.Parameters hsfp) {
+									   HybridSpeedField.Parameters hsfp,
+									   AdditionalParameters addparams) {
 		assert params != null;
 		assert im != null;
 		assert init != null;
-		SpeedField speed = SpeedFieldFactory.create(sfmethod, im, init, hsfp);
+		assert addparams != null;
+
+		SpeedField speed = SpeedFieldFactory.create(addparams.sfmethod,
+													im, init, hsfp);
 
 		FastLevelSet fls = new FastLevelSet(params, im, init, speed);
 		fls.addIterationListener(new ProgressReporter());
 
-		if (lsDisplay == null) {
-			lsDisplay = new gui.LevelSetListDisplay(im, true);
-		}
-		else {
-			lsDisplay.setBackground(im);
+		if (addparams.plotProgress) {
+			if (lsDisplay == null) {
+				lsDisplay = new gui.LevelSetListDisplay(im, true);
+			}
+			else {
+				lsDisplay.setBackground(im);
+			}
+
+			fls.addListListener(lsDisplay);
 		}
 
-		fls.addListListener(lsDisplay);
 		boolean b = fls.segment();
 
 		if (!b) {
