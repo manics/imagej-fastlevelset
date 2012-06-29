@@ -184,6 +184,12 @@ public class FastLevelSet {
 		new LinkedList<LevelSetIterationListener>();
 
 	/**
+	 * List of classes to notify of updated pixels lists
+	 */
+	protected List<LevelSetListListener> listListerners =
+		new LinkedList<LevelSetListListener>();
+
+	/**
 	 * Constructor.
 	 * Setup the intermediate matrices.
      * Initialise phi and the gaussian filter.
@@ -873,11 +879,22 @@ public class FastLevelSet {
 	}
 
 	/**
+	 * Add a class to be notified of list changes
+	 */
+	public void addListListener(LevelSetListListener li) {
+		listListerners.add(li);
+	}
+
+	/**
 	 * Notify listeners of a completed full iteration
 	 */
 	protected void notifyFull(int full, int fullT) {
 		for (LevelSetIterationListener li : iterationListerners) {
 			li.fullIteration(full, fullT);
+		}
+
+		for (LevelSetListListener li : listListerners) {
+			li.fullIteration(lin.iterator(), lout.iterator());
 		}
 	}
 
@@ -888,6 +905,10 @@ public class FastLevelSet {
 		for (LevelSetIterationListener li : iterationListerners) {
 			li.speedIteration(full, fullT, speed, speedT);
 		}
+
+		for (LevelSetListListener li : listListerners) {
+			li.speedIteration(lin.iterator(), lout.iterator());
+		}
 	}
 
 	/**
@@ -896,6 +917,10 @@ public class FastLevelSet {
 	protected void notifySmooth(int full, int fullT, int smooth, int smoothT) {
 		for (LevelSetIterationListener li : iterationListerners) {
 			li.smoothIteration(full, fullT, smooth, smoothT);
+		}
+
+		for (LevelSetListListener li : listListerners) {
+			li.smoothIteration(lin.iterator(), lout.iterator());
 		}
 	}
 
