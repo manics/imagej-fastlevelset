@@ -1,4 +1,5 @@
 import ij.*;
+import ij.gui.*;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
 
@@ -34,7 +35,12 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		ImageStack tmpstack = new ImageStack(
 			stack.getWidth(), stack.getHeight());
 
+
 		FastLevelSet.Parameters params = defaultParams();
+		if (!getUserParameters(params)) {
+			IJ.log("Plugin cancelled");
+			return;
+		}
 		SpeedFieldFactory.SFMethod sf =
 			SpeedFieldFactory.SFMethod.CHAN_VESE;
 
@@ -60,6 +66,66 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		ImagePlus result = new ImagePlus("Segmentation", segstack);
 		result.show();
 		new ImagePlus("Initialisation", tmpstack).show();
+	}
+
+	/**
+	 * Show a dialog to request user parameters for the segmentation
+	 * algorithm
+	 * @param The parameters object which must hold default values, and whose
+	 *        fields will be changed to any user selected parameters
+	 * @return true if the user clicked OK, false if cancelled
+	 */
+	protected boolean getUserParameters(FastLevelSet.Parameters params) {
+		GenericDialog gd = new GenericDialog("Fast level set settings");
+		gd.addMessage(
+		/*123456789012345678901234567890123456789012345678901234567890*/
+		 "The level set works by starting from the initialisation and\n" +
+		 "iteratively growing/shrinking the boundary.\n" +
+		 "If the initialisation is quite far from the actual boundary\n" +
+		 "then increase 'Iterations' and/or 'Speed sub iterations'.\n" +
+		 "If the boundary is too jagged then increase 'Smooth sub-\n" +
+		 "iterations' and/or decrease 'Speed sub-iterations' to vary\n" +
+		 "the smoothness of the segmentation boundary, and vice-versa.\n" +
+		 "The greater the number of iterations the longer this\n" +
+		 "algorithm will take to run.");
+		gd.addNumericField("Iterations", params.maxIterations, 0);
+		gd.addNumericField("Speed_sub-iterations", params.speedIterations, 0);
+		gd.addNumericField("Smooth_sub-iterations", params.smoothIterations, 0);
+
+		// I've never had to change these two
+		//gd.addNumericField("Smoothing_kernel_width", params.gaussWidth, 0);
+		//gd.addNumericField("Smoothing_kernel_sigma", params.gaussSigma, 2);
+
+		gd.addCheckbox("Display_progress", false);
+
+		String choices[] = {"Chan Vese", "Hybrid"};
+		gd.addChoice("Field_type", choices, choices[0]);
+
+		gd.addMessage("Hybrid speed field parameters");
+		gd.addNumericField("Local radius", 16, 0);
+
+		gd.showDialog();
+		if (gd.wasCanceled()) {
+			return false;
+		}
+
+		params.maxIterations = (int)gd.getNextNumber();
+		params.speedIterations = (int)gd.getNextNumber();
+		params.smoothIterations = (int)gd.getNextNumber();
+		//params.gaussWidth = (int)gd.getNextNumber();
+		//params.gaussSigma = gd.getNextNumber();
+
+		boolean plotProgress = gd.getNextBoolean();
+
+		int field = gd.getNextChoiceIndex();
+		if (field != 0) {
+			IJ.error("Invalid choice");
+			return false;
+		}
+
+		int cr = (int)gd.getNextNumber();
+
+		return true;
 	}
 
 	/**
