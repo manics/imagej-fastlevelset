@@ -67,7 +67,7 @@ public class UnionFind<E> {
 	 * root to avoid traversing the tree in future
 	 * @return The root of this tree (i.e. the label for this component)
 	 */
-	protected UnionFind<E> findRoot() {
+	public UnionFind<E> findRoot() {
 		if (parent != this) {
 			parent = parent.findRoot();
 		}
