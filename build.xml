@@ -4,8 +4,12 @@
   <property name="classes.dir" value="${build.dir}/classes"/>
   <property name="jar.dir" value="${build.dir}/jar"/>
   <property name="imagej.dir" value="/opt/sas/ImageJ"/>
-  <property name="test.class" value="FastLevelSet_Test"/>
-  <property name="test.image" value="./im3.tif"/>
+
+  <property name="test.class" value="RunPluginWithoutIJ"/>
+  <property name="test1.plugin" value="FastLevelSet_Plugin"/>
+  <property name="test1.image" value="./im3.tif"/>
+  <property name="test2.plugin" value="ConnectedComponents_Plugin"/>
+  <property name="test2.image" value="./im3-seg.tif"/>
 
   <path id="classpath">
     <fileset dir="${imagej.dir}" includes="*.jar"/>
@@ -17,7 +21,7 @@
 
   <target name="compile">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}"
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true"
 	   includeantruntime="false" classpathref="classpath">
       <compilerarg value="-Xlint"/>
     </javac>
@@ -31,18 +35,24 @@
     </jar>
   </target>
 
-  <target name="run" depends="compile">
+  <!--Reminder: Can't use java -jar and -classpath together-->
+
+  <target name="test1" depends="compile">
     <java classname="${test.class}" fork="true"
 	  classpathref="classpath" classpath="${classes.dir}">
-      <arg value="${test.image}"/>
+      <arg value="${test1.plugin}"/>
+      <arg value="${test1.image}"/>
     </java>
-    <!--Can't use -jar and -classpath together-->
-    <!--java jar="${jar.dir}/${ant.project.name}.jar" fork="true"
-	  classpathref="classpath"/-->
+  </target>
+
+  <target name="test2" depends="compile">
+    <java classname="${test.class}" fork="true"
+	  classpathref="classpath" classpath="${classes.dir}">
+      <arg value="${test2.plugin}"/>
+      <arg value="${test2.image}"/>
+    </java>
   </target>
 
   <target name="clean-build" depends="clean,jar"/>
-
-  <!--target name="main" depends="clean,run"/-->
 
 </project>
