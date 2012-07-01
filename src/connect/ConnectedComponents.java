@@ -84,51 +84,15 @@ public class ConnectedComponents {
 		int h = binim.getHeight();
 		labelim = new ShortProcessor(w, h);
 
-		// First pixel
-		boolean p = binim.get(0, 0) > 0;
-		if (p) {
-			labelim.set(0, 0, newRegion());
-		}
-
-		// First line
-		for (int x = 1; x < h; ++x) {
-			int y = 0;
-			p = binim.get(x, y) > 0;
-
-			if (p) {
-				int lwest = labelim.get(x - 1, y);
-
-				if (lwest > 0) {
-					labelim.set(x, y, lwest);
-				}
-				else {
-					labelim.set(x, y, newRegion());
-				}
-			}
-		}
-
-		// All other lines
-		for (int y = 1; y < h; ++y) {
-			int x = 0;
-			p = binim.get(x, y) > 0;
-
-			if (p) {
-				int lnorth = labelim.get(x, y - 1);
-				if (lnorth > 0) {
-					labelim.set(x, y, lnorth);
-				}
-				else {
-					labelim.set(x, y, newRegion());
-				}
-			}
-
-			// Need to check west and north, and merge regions if necessary
-			for (x = 1; x < w; ++x) {
-				p = binim.get(x, y) > 0;
+		for (int y = 0; y < h; ++y) {
+			for (int x = 0; x < w; ++x) {
+				boolean p = binim.get(x, y) > 0;
 
 				if (p) {
-					int lwest = labelim.get(x - 1, y);
-					int lnorth = labelim.get(x, y - 1);
+					// Need to check west and north labels,
+					// merge regions if necessary
+					int lwest = getLabelWest(x, y);
+					int lnorth = getLabelNorth(x, y);
 
 					if (lwest > 0) {
 						labelim.set(x, y, lwest);
@@ -148,6 +112,26 @@ public class ConnectedComponents {
 
 		pruneLabels();
 		return ncomponents;
+	}
+
+	/**
+	 * Get the label of the pixel to the west of this pixel
+	 * @param x X-coordinate of this pixel
+	 * @param y Y-coordinate of this pixel
+	 * @return The label, or -1 if beyond the edge of the image
+	 */
+	protected int getLabelWest(int x, int y) {
+		return x == 0 ? -1 : labelim.get(x - 1, y);
+	}
+
+	/**
+	 * Get the label of the pixel to the north of this pixel
+	 * @param x X-coordinate of this pixel
+	 * @param y Y-coordinate of this pixel
+	 * @return The label, or -1 if beyond the edge of the image
+	 */
+	protected int getLabelNorth(int x, int y) {
+		return y == 0 ? -1 : labelim.get(x, y - 1);
 	}
 
 	/**
