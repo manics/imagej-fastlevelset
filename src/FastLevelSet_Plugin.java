@@ -55,7 +55,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		ImageStack stack = imp.getStack();
 		ImageStack segstack = new ImageStack(
 			stack.getWidth(), stack.getHeight());
-		ImageStack tmpstack = new ImageStack(
+		ImageStack initstack = new ImageStack(
 			stack.getWidth(), stack.getHeight());
 
 
@@ -81,7 +81,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 											   addparams);
 
 				segstack.addSlice(seg);
-				tmpstack.addSlice(init);
+				initstack.addSlice(init);
 			}
 		}
 		catch (Error e) {
@@ -90,9 +90,10 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 			throw e;
 		}
 
-		ImagePlus result = new ImagePlus("Segmentation", segstack);
+		String title = imp.getShortTitle() + " Segmentation";
+		ImagePlus result = new ImagePlus(title, segstack);
 		result.show();
-		new ImagePlus("Initialisation", tmpstack).show();
+		//new ImagePlus("Initialisation", initstack).show();
 	}
 
 	/**

@@ -1,8 +1,7 @@
 import ij.*;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
-
-import connect.*;
+import connect.ConnectedComponents;
 
 
 /**
@@ -49,7 +48,8 @@ public class ConnectedComponents_Plugin implements PlugInFilter {
 			throw e;
 		}
 
-		ImagePlus result = new ImagePlus("Coloured labels", labelstack);
+		String title = imp.getShortTitle() + " Coloured Regions";
+		ImagePlus result = new ImagePlus(title, labelstack);
 		result.show();
 	}
 
