@@ -18,7 +18,7 @@ public class ConnectedComponents {
 	 * A modified UnionFind class that contains an additional field to hold
 	 * the reordered pruned label
 	 */
-	private class UnionFindL extends UnionFind<Integer> {
+	private static class UnionFindL extends UnionFind<Integer> {
 		/**
 		 * The modified label after pruning and reordering. -1 indicates unset.
 		 */
@@ -53,6 +53,7 @@ public class ConnectedComponents {
 	public ConnectedComponents(BinaryProcessor binim) {
 		this.binim = binim;
 		regions = new ArrayList<UnionFindL>();
+		labelim = new ShortProcessor(binim.getWidth(), binim.getHeight());
 
 		// Add a dummy region with label 0 (makes indexing easier)
 		newRegion();
@@ -82,7 +83,6 @@ public class ConnectedComponents {
 	public int labelComponents4() {
 		int w = binim.getWidth();
 		int h = binim.getHeight();
-		labelim = new ShortProcessor(w, h);
 
 		for (int y = 0; y < h; ++y) {
 			for (int x = 0; x < w; ++x) {
@@ -120,7 +120,7 @@ public class ConnectedComponents {
 	 * @param y Y-coordinate of this pixel
 	 * @return The label, or -1 if beyond the edge of the image
 	 */
-	protected int getLabelWest(int x, int y) {
+	private int getLabelWest(int x, int y) {
 		return x == 0 ? -1 : labelim.get(x - 1, y);
 	}
 
@@ -130,7 +130,7 @@ public class ConnectedComponents {
 	 * @param y Y-coordinate of this pixel
 	 * @return The label, or -1 if beyond the edge of the image
 	 */
-	protected int getLabelNorth(int x, int y) {
+	private int getLabelNorth(int x, int y) {
 		return y == 0 ? -1 : labelim.get(x, y - 1);
 	}
 
@@ -138,7 +138,7 @@ public class ConnectedComponents {
 	 * Add a new region
 	 * @return the label for this region
 	 */
-	protected int newRegion() {
+	private int newRegion() {
 		int label = regions.size();
 		if (label > Short.MAX_VALUE) {
 			throw new ArithmeticException("Maximum number of labels (" +
@@ -151,8 +151,10 @@ public class ConnectedComponents {
 
 	/**
 	 * Merge two regions (does not update the label image)
+	 * @param a the index of the first region
+	 * @param b the index of the second region
 	 */
-	protected int mergeRegions(int a, int b) {
+	private int mergeRegions(int a, int b) {
 		UnionFindL merged =
 			(UnionFindL)UnionFindL.union(regions.get(a), regions.get(b));
 		return merged.getRootLabel();
@@ -162,7 +164,7 @@ public class ConnectedComponents {
 	 * Prune non-root labels, and create new labels that are consecutive.
 	 * Relabel the image using the pruned labels.
 	 */
-	protected void pruneLabels() {
+	private void pruneLabels() {
 		ncomponents = -1;
 
 		for (UnionFindL r : regions) {
@@ -199,7 +201,8 @@ public class ConnectedComponents {
 	}
 
 	/**
-	 * Create a colourmap of contrasting colours, at least one for each label
+	 * Create a colourmap of contrasting colours with at least n+1 entries
+	 * (there may be more), where entry[0] is black
 	 * @param n The minimum number of different colours required (ignoring
 	 *          background)
 	 * @return The colourmap, entry [0] will be black (for background)
