@@ -2,6 +2,7 @@ import ij.*;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
 import connect.ConnectedComponents;
+import connect.ConnectSlices;
 
 
 /**
@@ -23,7 +24,9 @@ public class ConnectedComponents_Plugin implements PlugInFilter {
 
 	public void run(ImageProcessor ip) {
 		ImageStack stack = imp.getStack();
-		ImageStack labelstack = new ImageStack(
+		ImageStack labelStack = new ImageStack(
+			stack.getWidth(), stack.getHeight());
+		ImageStack colourLabelStack = new ImageStack(
 			stack.getWidth(), stack.getHeight());
 
 		try {
@@ -39,7 +42,8 @@ public class ConnectedComponents_Plugin implements PlugInFilter {
 				int ncomponents = cc.labelComponents4();
 				IJ.log("Found " + ncomponents + " components");
 
-				labelstack.addSlice(cc.getColouredLabels());
+				labelStack.addSlice(cc.getLabelImage());
+				colourLabelStack.addSlice(cc.getColouredLabels());
 			}
 		}
 		catch (Error e) {
@@ -49,9 +53,30 @@ public class ConnectedComponents_Plugin implements PlugInFilter {
 		}
 
 		String title = imp.getShortTitle() + " Coloured Regions";
-		ImagePlus result = new ImagePlus(title, labelstack);
+		ImagePlus result = new ImagePlus(title, colourLabelStack);
 		result.show();
+
+		ImageStack colourConnect3d = connectSlices(labelStack);
+		String title2 = imp.getShortTitle() + " Coloured 3D Regions";
+		ImagePlus result2 = new ImagePlus(title2, colourConnect3d);
+		result2.show();
 	}
 
+	/**
+	 * Connect components across slices in a stack
+	 * @param labelled The iamge stack in which each image has been
+	 *        independently labelled
+	 * @return A new label stack in which regions have been coloured taking
+	 *         into account connections between slices
+	 */
+	ImageStack connectSlices(ImageStack labelled) {
+		IJ.log("Merging labels across slices");
+		ConnectSlices cs = new ConnectSlices(labelled);
+		int ncomponents = cs.connectSlices();
+		IJ.log("Found " + ncomponents + " components");
+
+		IJ.log(cs.mapToString(ConnectSlices.MapDirection.FORWARD));
+		return cs.getColouredLabels();
+	}
 }
 
