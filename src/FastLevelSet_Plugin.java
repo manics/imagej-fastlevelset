@@ -47,6 +47,18 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		public String sfmethod;
 
 		/**
+		 * The initialisation method
+		 */
+		public String initMethod;
+
+		/**
+		 * Should subsequent frames be initialised from the previous
+		 * segmentation (true) or indenpendently using the specified method
+		 * (false)
+		 */
+		public boolean initFromPrevious;
+		
+		/**
 		 * Should each iteration of the level set be plotted?
 		 */
 		public boolean plotProgress;
@@ -66,6 +78,8 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		 */
 		public Parameters() {
 			sfmethod = null;
+			initMethod = null;
+			initFromPrevious = true;
 			plotProgress = true;			
 
 			lsparams = new FastLevelSet.Parameters();
@@ -137,17 +151,24 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		HybridSpeedField.Parameters hsfp = params.hsfparams;
 
 		GenericDialog gd = new GenericDialog("Fast level set settings");
-		gd.addMessage(
-		/*123456789012345678901234567890123456789012345678901234567890*/
-		 "The level set works by starting from the initialisation and\n" +
-		 "iteratively growing/shrinking the boundary.\n" +
-		 "If the initialisation is quite far from the actual boundary\n" +
-		 "then increase 'Iterations' and/or 'Speed sub iterations'.\n" +
-		 "If the boundary is too jagged then increase 'Smooth sub-\n" +
-		 "iterations' and/or decrease 'Speed sub-iterations' to vary\n" +
-		 "the smoothness of the segmentation boundary, and vice-versa.\n" +
-		 "The greater the number of iterations the longer this\n" +
-		 "algorithm will take to run.");
+		Font font = gd.getFont();
+		font = font.deriveFont((float)(font.getSize2D() * 0.9));
+		int charWidth = 80;
+
+		gd.addMessage(FastLevelSet_PluginStrings.format(
+						  FastLevelSet_PluginStrings.initialisation,
+						  charWidth), font);
+
+		String initMethods[] = Initialiser.getInitialisationMethods();
+		gd.addChoice("Field_type", initMethods, initMethods[0]);
+
+		gd.addCheckbox("Initialise from previous segmentation",
+					   params.initFromPrevious);
+
+		gd.addMessage(FastLevelSet_PluginStrings.format(
+						  FastLevelSet_PluginStrings.levelSetParameters,
+						  charWidth), font);
+
 		gd.addNumericField("Iterations", lsp.maxIterations, 0);
 		gd.addNumericField("Speed_sub-iterations", lsp.speedIterations, 0);
 		gd.addNumericField("Smooth_sub-iterations", lsp.smoothIterations, 0);
@@ -158,7 +179,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 		gd.addCheckbox("Display_progress (may be slower)", params.plotProgress);
 
-		List<String> sfmethods = new LinkedList<String>();
+		LinkedList<String> sfmethods = new LinkedList<String>();
 		for (SpeedFieldFactory.SfMethod e :
 				 SpeedFieldFactory.SfMethod.values()) {
 			sfmethods.add(e.toString());
@@ -175,6 +196,11 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		if (gd.wasCanceled()) {
 			return false;
 		}
+
+		// Retrieve the parameters
+
+		params.initMethod = initMethods[gd.getNextChoiceIndex()];
+		params.initFromPrevious = gd.getNextBoolean();
 
 		lsp.maxIterations = (int)gd.getNextNumber();
 		lsp.speedIterations = (int)gd.getNextNumber();
