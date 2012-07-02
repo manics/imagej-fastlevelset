@@ -6,9 +6,8 @@ import ij.process.*;
 import levelset.*;
 import gui.LevelSetListDisplay;
 
-import java.util.List;
+import java.awt.Font;
 import java.util.LinkedList;
-import java.util.Iterator;
 
 
 /**
@@ -26,6 +25,16 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 	 * The image to be segmented
 	 */
 	protected ImagePlus imp;
+
+	/**
+	 * The initialisation image
+	 */
+	protected ImagePlus impInit = null;
+
+	/**
+	 * The segmentation image
+	 */
+	protected ImagePlus impSeg = null;
 
 	/**
 	 * The window for displaying intermediate level set results
@@ -97,11 +106,6 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 	public void run(ImageProcessor ip) {
 		ImageStack stack = imp.getStack();
-		ImageStack segstack = new ImageStack(
-			stack.getWidth(), stack.getHeight());
-		ImageStack initstack = new ImageStack(
-			stack.getWidth(), stack.getHeight());
-
 		Parameters params = new Parameters();
 
 		if (!getUserParameters(params)) {
@@ -110,18 +114,31 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		}
 
 		try {
-			// stack.getProcessor(i) uses 1-based indexing
 			int stackSize = stack.getSize();
+			BinaryProcessor prevSeg = null;
+
+			// stack.getProcessor(i) uses 1-based indexing
 			for (int i = 1; i <= stackSize; ++i) {
 				IJ.log("Processing slice " + i);
 				IJ.showStatus("Processing slice " + i + "/" + stackSize);
 
 				ImageProcessor im = stack.getProcessor(i);
-				BinaryProcessor init = initFromMean(im, false);
-				BinaryProcessor seg = levelset(params, im, init);
 
-				segstack.addSlice(seg);
-				initstack.addSlice(init);
+				BinaryProcessor init;
+				if (params.initFromPrevious && prevSeg != null) {
+					init = prevSeg;
+				}
+				else {
+					init = Initialiser.getInitialisation(
+						imp, im, params.initMethod);
+				}
+
+				updateInitDisplay(init);
+
+				BinaryProcessor seg = levelset(params, im, init);
+				prevSeg = seg;
+
+				updateSegDisplay(seg);
 			}
 		}
 		catch (Error e) {
@@ -129,11 +146,40 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 			e.printStackTrace();
 			throw e;
 		}
+	}
 
-		String title = imp.getShortTitle() + " Segmentation";
-		ImagePlus result = new ImagePlus(title, segstack);
-		result.show();
-		//new ImagePlus("Initialisation", initstack).show();
+	private void updateInitDisplay(BinaryProcessor init) {
+		if (impInit == null) {
+			ImageStack s = imp.createEmptyStack();
+			s.addSlice(init);
+			impInit = new ImagePlus(imp.getShortTitle() + " Initialisation", s);
+			impInit.show();
+		}
+		else {
+			// None of the ImagePlus.update... methods seem to work.
+			// Re-adding the stack seems to be the only way to get an update
+			ImageStack s = impInit.getStack();
+			s.addSlice(init);
+			impInit.setStack(s);
+			impInit.setSlice(s.getSize());
+		}
+	}
+
+	private void updateSegDisplay(BinaryProcessor seg) {
+		if (impSeg == null) {
+			ImageStack s = imp.createEmptyStack();
+			s.addSlice(seg);
+			impSeg = new ImagePlus(imp.getShortTitle() + " Segmentation", s);
+			impSeg.show();
+		}
+		else {
+			// None of the ImagePlus.update... methods seem to work.
+			// Re-adding the stack seems to be the only way to get an update
+			ImageStack s = impSeg.getStack();
+			s.addSlice(seg);
+			impSeg.setStack(s);
+			impSeg.setSlice(s.getSize());
+		}
 	}
 
 	/**
@@ -233,29 +279,6 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 			//IJ.log("\tCompleted smooth: [" + full + "]" +
 			//smooth + "/" + smoothT);
 		}
-	}
-
-	/**
-	 * Create an initialisation by labelling pixels with intensity greater than
-	 * the mean as foreground
-	 * @param im The image (single slice)
-	 * @param global If true use the mean calculated over all slices, if false
-	 *        calculate the mean for this slice only
-	 * @return The binary initialisation image
-	 */
-	protected BinaryProcessor initFromMean(ImageProcessor im, boolean global) {
-		ImageStatistics stats;
-		if (global) {
-			stats = imp.getStatistics(ij.measure.Measurements.MEAN);
-		}
-		else {
-			stats = ImageStatistics.getStatistics(
-				im, ij.measure.Measurements.MEAN, imp.getCalibration());
-		}
-
-		ImageProcessor bin = im.duplicate();
-		bin.threshold((int)stats.mean);
-		return new BinaryProcessor(new ByteProcessor(bin, false));
 	}
 
 	/**
