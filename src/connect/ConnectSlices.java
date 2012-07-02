@@ -215,25 +215,25 @@ public class ConnectSlices {
 
 		for (int y = 0; y < size[1]; ++y) {
 			for (int x = 0; x < size[0]; ++x) {
-				int p = (labels1 != null) ? labels1.get(x, y) : -1;
-				int q = (labels2 != null) ? labels2.get(x, y) : -1;
+				int p = (labels1 != null) ? labels1.get(x, y) : 0;
+				int q = (labels2 != null) ? labels2.get(x, y) : 0;
 
-				if (p > 0) {
+				if (p != 0) {
 					SliceLabel kp = new SliceLabel(i, p);
 					if (!fwdLabelMap.containsKey(kp)) {
 						fwdLabelMap.put(kp, new TreeSet<Integer>());
 					}
-					if (q > 0) {
+					if (q != 0) {
 						fwdLabelMap.get(kp).add(q);
 					}
 				}
 
-				if (q > 0) {
+				if (q != 0) {
 					SliceLabel kq = new SliceLabel(j, q);
 					if (!bwdLabelMap.containsKey(kq)) {
 						bwdLabelMap.put(kq, new TreeSet<Integer>());
 					}
-					if (p > 0) {
+					if (p != 0) {
 						bwdLabelMap.get(kq).add(p);
 					}
 				}
@@ -324,7 +324,7 @@ public class ConnectSlices {
 			for (int y = 0; y < size[1]; ++y) {
 				for (int x = 0; x < size[0]; ++x) {
 					int label = sliceIn.get(x, y);
-					if (label > 0) {
+					if (label != 0) {
 						SliceLabel sl = new SliceLabel(z, label);
 						assert regions.containsKey(sl);
 						sliceOut.set(x, y, regions.get(sl).newLabel);

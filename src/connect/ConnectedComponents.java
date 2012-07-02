@@ -86,7 +86,7 @@ public class ConnectedComponents {
 
 		for (int y = 0; y < h; ++y) {
 			for (int x = 0; x < w; ++x) {
-				boolean p = binim.get(x, y) > 0;
+				boolean p = binim.get(x, y) != 0;
 
 				if (p) {
 					// Need to check west and north labels,
@@ -94,13 +94,13 @@ public class ConnectedComponents {
 					int lwest = getLabelWest(x, y);
 					int lnorth = getLabelNorth(x, y);
 
-					if (lwest > 0) {
+					if (lwest != 0) {
 						labelim.set(x, y, lwest);
 						if (lnorth > 0 && lnorth != lwest) {
 							mergeRegions(lwest, lnorth);
 						}
 					}
-					else if (lnorth > 0) {
+					else if (lnorth != 0) {
 						labelim.set(x, y, lnorth);
 					}
 					else {
@@ -118,20 +118,20 @@ public class ConnectedComponents {
 	 * Get the label of the pixel to the west of this pixel
 	 * @param x X-coordinate of this pixel
 	 * @param y Y-coordinate of this pixel
-	 * @return The label, or -1 if beyond the edge of the image
+	 * @return The label, or 0 if beyond the edge of the image
 	 */
 	private int getLabelWest(int x, int y) {
-		return x == 0 ? -1 : labelim.get(x - 1, y);
+		return x == 0 ? 0 : labelim.get(x - 1, y);
 	}
 
 	/**
 	 * Get the label of the pixel to the north of this pixel
 	 * @param x X-coordinate of this pixel
 	 * @param y Y-coordinate of this pixel
-	 * @return The label, or -1 if beyond the edge of the image
+	 * @return The label, or 0 if beyond the edge of the image
 	 */
 	private int getLabelNorth(int x, int y) {
-		return y == 0 ? -1 : labelim.get(x, y - 1);
+		return y == 0 ? 0 : labelim.get(x, y - 1);
 	}
 
 	/**
