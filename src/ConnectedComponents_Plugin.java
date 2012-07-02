@@ -28,10 +28,10 @@ public class ConnectedComponents_Plugin implements PlugInFilter {
 			stack.getWidth(), stack.getHeight());
 		ImageStack colourLabelStack = new ImageStack(
 			stack.getWidth(), stack.getHeight());
+		int stackSize = stack.getSize();
 
 		try {
 			// stack.getProcessor(i) uses 1-based indexing
-			int stackSize = stack.getSize();
 			for (int i = 1; i <= stackSize; ++i) {
 				IJ.log("Processing slice " + i);
 				IJ.showStatus("Processing slice " + i + "/" + stackSize);
@@ -56,10 +56,12 @@ public class ConnectedComponents_Plugin implements PlugInFilter {
 		ImagePlus result = new ImagePlus(title, colourLabelStack);
 		result.show();
 
-		ImageStack colourConnect3d = connectSlices(labelStack);
-		String title2 = imp.getShortTitle() + " Coloured 3D Regions";
-		ImagePlus result2 = new ImagePlus(title2, colourConnect3d);
-		result2.show();
+		if (stackSize > 1) {
+			ImageStack colourConnect3d = connectSlices(labelStack);
+			String title2 = imp.getShortTitle() + " Coloured 3D Regions";
+			ImagePlus result2 = new ImagePlus(title2, colourConnect3d);
+			result2.show();
+		}
 	}
 
 	/**
