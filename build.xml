@@ -42,6 +42,9 @@
 	  classpathref="classpath" classpath="${classes.dir}">
       <arg value="${test1.plugin}"/>
       <arg value="${test1.image}"/>
+      <assertions>
+	<enable/>
+      </assertions>
     </java>
   </target>
 
@@ -50,6 +53,9 @@
 	  classpathref="classpath" classpath="${classes.dir}">
       <arg value="${test2.plugin}"/>
       <arg value="${test2.image}"/>
+      <assertions>
+	<enable/>
+      </assertions>
     </java>
   </target>
 
