@@ -62,6 +62,8 @@ public class MeasureSegmentation_Plugin implements PlugInFilter {
 	 * Create the Analyser object for calculating measurements
 	 */
 	void initialiseAnalyser() {
+		// Partial explanation of available measurements:
+		// http://imagejdocu.tudor.lu/doku.php?id=gui:analyze:set_measurements
 		int[] measures = {
 			Measurements.AREA,
 			Measurements.ELLIPSE,
