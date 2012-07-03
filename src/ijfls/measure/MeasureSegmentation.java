@@ -93,6 +93,8 @@ public class MeasureSegmentation {
 	public Ellipse fitEllipse(ImageProcessor seg) {
 		EllipseFitter ef = new EllipseFitter();
 
+		// Use this segmentation as a mask, so ensure no ROI is set
+		seg.resetRoi();
 		seg.setMask(seg);
 		ef.fit(seg, seg.getStatistics());
 		ef.drawEllipse(seg);
