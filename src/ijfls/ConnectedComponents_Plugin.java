@@ -1,8 +1,10 @@
+package ijfls;
+
 import ij.*;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
-import connect.ConnectedComponents;
-import connect.ConnectSlices;
+import ijfls.connect.ConnectedComponents;
+import ijfls.connect.ConnectSlices;
 
 
 /**

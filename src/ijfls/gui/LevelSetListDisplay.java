@@ -1,10 +1,10 @@
-package gui;
+package ijfls.gui;
 
 import java.util.Iterator;
 import ij.ImagePlus;
 import ij.process.*;
 
-import levelset.*;
+import ijfls.levelset.*;
 
 /**
  * A class which displays the level set inside and outside lists on an image

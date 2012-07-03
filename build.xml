@@ -5,10 +5,10 @@
   <property name="jar.dir" value="${build.dir}/jar"/>
   <property name="imagej.dir" value="/opt/sas/ImageJ"/>
 
-  <property name="test.class" value="RunPluginWithoutIJ"/>
-  <property name="test1.plugin" value="FastLevelSet_Plugin"/>
+  <property name="test.class" value="ijfls.RunPluginWithoutIJ"/>
+  <property name="test1.plugin" value="ijfls.FastLevelSet_Plugin"/>
   <property name="test1.image" value="./im3.tif"/>
-  <property name="test2.plugin" value="ConnectedComponents_Plugin"/>
+  <property name="test2.plugin" value="ijfls.ConnectedComponents_Plugin"/>
   <property name="test2.image" value="./im3-seg.tif"/>
 
   <path id="classpath">

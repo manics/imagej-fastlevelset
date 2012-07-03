@@ -1,4 +1,4 @@
-package levelset;
+package ijfls.levelset;
 
 /**
  * A speed field for a level sets segmentation.

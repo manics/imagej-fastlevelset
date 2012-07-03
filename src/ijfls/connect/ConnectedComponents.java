@@ -1,4 +1,4 @@
-package connect;
+package ijfls.connect;
 
 import java.awt.Color;
 import java.util.ArrayList;

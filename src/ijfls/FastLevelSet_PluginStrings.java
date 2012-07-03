@@ -1,3 +1,5 @@
+package ijfls;
+
 /**
  * Long strings for the FastLevelSet_Plugin dialog
  */

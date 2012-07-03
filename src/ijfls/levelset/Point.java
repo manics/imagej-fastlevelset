@@ -1,4 +1,4 @@
-package levelset;
+package ijfls.levelset;
 
 /**
  * A 2D coordinate

@@ -1,4 +1,4 @@
-package connect;
+package ijfls.connect;
 
 /**
  * Implementation of the union-find algorithm for finding and merging disjoint

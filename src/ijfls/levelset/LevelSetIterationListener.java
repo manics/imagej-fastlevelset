@@ -1,4 +1,4 @@
-package levelset;
+package ijfls.levelset;
 
 import java.util.Iterator;
 

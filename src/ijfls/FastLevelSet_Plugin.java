@@ -1,10 +1,12 @@
+package ijfls;
+
 import ij.*;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
 
-import levelset.*;
-import gui.LevelSetListDisplay;
+import ijfls.levelset.*;
+import ijfls.gui.LevelSetListDisplay;
 
 import java.awt.Font;
 import java.util.LinkedList;
