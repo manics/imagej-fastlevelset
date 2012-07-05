@@ -45,6 +45,13 @@ public class SpeedFieldFactory {
 		}
 	}
 
+	/**
+	 * Create speedfield (note some parameters may be null)
+	 * @param method The name of the speedfield algorithm
+	 * @param im The image to be segmented
+	 * @param init The initialisation
+	 * @param hsfp Parameters for the HyrbidSpeedField
+	 */
 	static public SpeedField create(String method, ImageProcessor im,
 									BinaryProcessor init,
 									HybridSpeedField.Parameters hsfp) {

@@ -17,7 +17,9 @@ import java.util.Iterator;
  * Also published in 2008, A Real-Time Algorithm for the Approximation of
  * Level-Set-Based Curve Evolution, IEEE Image Processing.
  *
- *
+ * Essentially this is an extreme narrowband method, which takes advantage
+ * of the fact that for image segmentation we don't always need to solve
+ * the level-set PDE exactly, see paper for details.
  */
 public class FastLevelSet {
 
@@ -467,8 +469,7 @@ public class FastLevelSet {
 			error("Not implemented for s > 15");
 		}
 
-		// Yes in theory only need to calculate 1/8th and duplicate but I can't
-		// be bothered
+		// In theory could just calculate 1/8th and duplicate instead
 		for (int y = 0; y < s; ++y) {
 			for (int x = 0; x < s; ++x) {
 				double d2 = (x - gw) * (x - gw) + (y - gw) * (y - gw);
@@ -695,9 +696,9 @@ public class FastLevelSet {
 	};
 
 	/**
-	 * Add a point to the Lin or Lout. The point is added to the current
-	 * iterator position (note this is different from the C++ version which
-	 * inserts the point at the front of the list.
+	 * Add a point to the Lin or Lout.
+	 * @param p The point to be added
+	 * @param ln Whether to add to the in or out list
 	 */
 	private void addToList(Point p, ListType ln) {
 		//IJ.log("addToList: p=(" + p.x + "," + p.y + ") ln=" + ln);
@@ -718,6 +719,10 @@ public class FastLevelSet {
 
 	/**
 	 * Remove a point from Lin or Lout
+	 * @param pi Iterator to the point to be removed
+	 * @param p The point to be removed (needed to update phi)
+	 * @param ln Whether to work on the in or out list
+	 * @param phival The new value of phi at this point
 	 */
 	private void removeFromList(Iterator<Point> pi, Point p,
 								ListType ln, byte phival) {
@@ -748,6 +753,8 @@ public class FastLevelSet {
 	 * will fail
 	 * flushListAdditions() must be called when all iterators are no longer
 	 * required to ensure consistency
+	 * @param pi Iterator to the point to be moved
+	 * @param p The point to be moved (needed to update phi)
 	 */
 	private void switchIn(Iterator<Point> pi, Point p) {
 		//IJ.log("switchIn: p=(" + p.x + "," + p.y + ")");
@@ -780,6 +787,8 @@ public class FastLevelSet {
 	 * will fail
 	 * flushListAdditions() must be called when all iterators are no longer
 	 * required to ensure consistency
+	 * @param pi Iterator to the point to be moved
+	 * @param p The point to be moved (needed to update phi)
 	 */
 	private void switchOut(Iterator<Point> pi, Point p) {
 		//IJ.log("switchOut: p=(" + p.x + "," + p.y + ")");
@@ -873,6 +882,7 @@ public class FastLevelSet {
 
 	/**
 	 * Add a class to be notified of iterations
+	 * @param li The class to be notified
 	 */
 	public void addIterationListener(LevelSetIterationListener li) {
 		iterationListerners.add(li);
@@ -880,6 +890,7 @@ public class FastLevelSet {
 
 	/**
 	 * Add a class to be notified of list changes
+	 * @param li The class to be notified
 	 */
 	public void addListListener(LevelSetListListener li) {
 		listListerners.add(li);
@@ -887,6 +898,8 @@ public class FastLevelSet {
 
 	/**
 	 * Notify listeners of a completed full iteration
+	 * @param full The number of completed full iterations
+	 * @param fullT The total number of full iterations
 	 */
 	protected void notifyFull(int full, int fullT) {
 		for (LevelSetIterationListener li : iterationListerners) {
@@ -900,6 +913,10 @@ public class FastLevelSet {
 
 	/**
 	 * Notify listeners of a completed speed iteration
+	 * @param full The number of completed full iterations
+	 * @param fullT The total number of full iterations
+	 * @param speed The number of completed speed iterations in this cycle
+	 * @param speedT The total number of speed iterations in this cycle
 	 */
 	protected void notifySpeed(int full, int fullT, int speed, int speedT) {
 		for (LevelSetIterationListener li : iterationListerners) {
@@ -913,6 +930,10 @@ public class FastLevelSet {
 
 	/**
 	 * Notify listeners of a completed smooth iteration
+	 * @param full The number of completed full iterations
+	 * @param fullT The total number of full iterations
+	 * @param smooth The number of completed smooth iterations in this cycle
+	 * @param smoothT The total number of smooth iterations in this cycle
 	 */
 	protected void notifySmooth(int full, int fullT, int smooth, int smoothT) {
 		for (LevelSetIterationListener li : iterationListerners) {
@@ -937,6 +958,10 @@ public class FastLevelSet {
 		return b;
 	}
 
+	/**
+	 * Bring up an error message (note does not exit)
+	 * @param msg The error message to be displayed
+	 */
 	private static void error(String msg) {
 		IJ.error("FastLevelSet error", msg);
 	}
