@@ -20,7 +20,7 @@ public class Initialiser {
 	/**
 	 * Create an initialisation image
 	 * @param imp The ImagePlus object holding the image to be thresholded
-	 *			  (needed because ROIs seem to be attached to this)
+	 *        (needed because ROIs seem to be attached to this)
 	 * @param im The image to be thresholded (will be duplicated)
 	 * @param method The name of the method from AutoThresholder
 	 */
@@ -73,8 +73,7 @@ public class Initialiser {
 	/**
 	 * Create an initialisation image from an ROI
 	 * @param imp: The image plus object (for some reason selected ROIs seem
-	 *			   to be attached to the ImagePlus instead of the
-	 *			   ImageProcessor)
+	 *        to be attached to the ImagePlus instead of the ImageProcessor)
 	 * @return The binary initialisation
 	 */
 	private static BinaryProcessor initFromRoi(ImagePlus imp) {

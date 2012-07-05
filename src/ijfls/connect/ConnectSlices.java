@@ -59,7 +59,7 @@ public class ConnectSlices {
 			return (o instanceof SliceLabel) &&
 				slice == ((SliceLabel)o).slice &&
 				label == ((SliceLabel)o).label;
-        }
+		}
 
 		public int hashCode() {
 			return slice ^ ~label;

@@ -204,7 +204,7 @@ public class ConnectedComponents {
 	 * Create a colourmap of contrasting colours with at least n+1 entries
 	 * (there may be more), where entry[0] is black
 	 * @param n The minimum number of different colours required (ignoring
-	 *          background)
+	 *        background)
 	 * @return The colourmap, entry [0] will be black (for background)
 	 */
 	public static int[] createColourmap(int n) {
