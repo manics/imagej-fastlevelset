@@ -208,9 +208,9 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 						  charWidth), font);
 
 		String initMethods[] = Initialiser.getInitialisationMethods();
-		gd.addChoice("Field_type", initMethods, initMethods[0]);
+		gd.addChoice("Initialisation type", initMethods, initMethods[0]);
 
-		gd.addCheckbox("Initialise from previous segmentation",
+		gd.addCheckbox("Initialise from previous segmentation (stacks only)",
 					   params.initFromPrevious);
 
 		gd.addMessage(FastLevelSet_PluginStrings.format(
