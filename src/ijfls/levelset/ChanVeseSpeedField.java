@@ -29,10 +29,10 @@ public class ChanVeseSpeedField extends SpeedField {
 
 	public double computeSpeedD(FastLevelSet.Byte2D phi, Point p) {
 		// F = (I - u1)^2 - (I - u2)^2
-		//   = I^2 - 2Iu1 + u1^2 - I^2 + 2Iu2 -u2^2
-		//   = -2I(u1 - u2) + (u1^2 - u2^2)
-		//   = -2I(u1 - u2) + (u1 + u2)(u1 - u2)
-		//   = (u1 - u2)(-2I + u1 + u2)
+		//	 = I^2 - 2Iu1 + u1^2 - I^2 + 2Iu2 -u2^2
+		//	 = -2I(u1 - u2) + (u1^2 - u2^2)
+		//	 = -2I(u1 - u2) + (u1 + u2)(u1 - u2)
+		//	 = (u1 - u2)(-2I + u1 + u2)
 
 		// Note don't call updateSpeedChanges(), leave it to the caller
 

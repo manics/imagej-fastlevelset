@@ -19,7 +19,7 @@ public interface LevelSetIterationListener {
 	 * @param full The number of full iterations completed
 	 * @param fullT The total number of full iterations
 	 * @param speed The number of speed sub-iterations completed during this
-	 *        cycle
+	 *		  cycle
 	 * @param speedT The total number of speed sub-iterations during this cycle
 	 */
 	public void speedIteration(int full, int fullT, int speed, int speedT);
@@ -29,9 +29,9 @@ public interface LevelSetIterationListener {
 	 * @param full The number of full iterations completed
 	 * @param fullT The total number of full iterations
 	 * @param smooth The number of smooth sub-iterations completed during
-	 *        this cycle
+	 *		  this cycle
 	 * @param smoothT The total number of smooth sub-iterations during this
-	 *        cycle
+	 *		  cycle
 	 */
 	public void smoothIteration(int full, int fullT, int smooth, int smoothT);
 }

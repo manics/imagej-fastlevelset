@@ -25,30 +25,30 @@ public class FastLevelSet {
 	 * Parameters for the fast level set algorithm
 	 */
 	public static class Parameters {
-        /**
-         * Number of speed evolutions
-         */
-        public int speedIterations;
+		/**
+		 * Number of speed evolutions
+		 */
+		public int speedIterations;
 
-        /**
-         * Number of smoothing evolutions
-         */
-        public int smoothIterations;
+		/**
+		 * Number of smoothing evolutions
+		 */
+		public int smoothIterations;
 
-        /**
-         * Maximum number of iterations
-         */
-        public int maxIterations;
+		/**
+		 * Maximum number of iterations
+		 */
+		public int maxIterations;
 
-        /**
-         * Radius of the Gaussian filter
-         */
-        public int gaussWidth;
+		/**
+		 * Radius of the Gaussian filter
+		 */
+		public int gaussWidth;
 
-        /**
-         * Sigma for the Gaussian filter
-         */
-        public double gaussSigma;
+		/**
+		 * Sigma for the Gaussian filter
+		 */
+		public double gaussSigma;
 	}
 
 	/**
@@ -107,75 +107,75 @@ public class FastLevelSet {
 	 */
 	public final boolean DEBUG_CHECK = false;
 
-    /**
-     * Parameters for the level-set algorithm
-     */
+	/**
+	 * Parameters for the level-set algorithm
+	 */
 	protected Parameters params;
 
-    /**
-     * Size of the image
-     */
-    protected Point size;
+	/**
+	 * Size of the image
+	 */
+	protected Point size;
 
-    /**
-     * The image to be segmented
-     */
-    protected ImageProcessor im; // ImageType
+	/**
+	 * The image to be segmented
+	 */
+	protected ImageProcessor im; // ImageType
 
-    /**
-     * Phi (level-set function)
-     */
-    protected Byte2D phi; // PhiType
+	/**
+	 * Phi (level-set function)
+	 */
+	protected Byte2D phi; // PhiType
 
-    /**
-     * Temporary speed field
-     */
-    protected Byte2D speed; // SpeedType
+	/**
+	 * Temporary speed field
+	 */
+	protected Byte2D speed; // SpeedType
 
-    /**
-     * List of points on inside of boundary
-     */
+	/**
+	 * List of points on inside of boundary
+	 */
 	protected List<Point> lin = new LinkedList<Point>();
 
-    /**
-     * List of points on outside of boundary
-     */
+	/**
+	 * List of points on outside of boundary
+	 */
 	protected List<Point> lout = new LinkedList<Point>();
 
-    /**
-     * Temporary list of points to be added to Lin
-     */
+	/**
+	 * Temporary list of points to be added to Lin
+	 */
 	protected List<Point> addlin = new LinkedList<Point>();
 
-    /**
-     * Temporary list of points to be added to Lout
-     */
+	/**
+	 * Temporary list of points to be added to Lout
+	 */
 	protected List<Point> addlout = new LinkedList<Point>();
 
-    /**
-     * The Gaussian filter matrix
-     */
-    protected Byte2D gaussFilter;
+	/**
+	 * The Gaussian filter matrix
+	 */
+	protected Byte2D gaussFilter;
 
-    /**
-     * The threshold for the Gaussian filter smoothing
-     */
-    protected int gaussFilterThreshold;
+	/**
+	 * The threshold for the Gaussian filter smoothing
+	 */
+	protected int gaussFilterThreshold;
 
-    /**
-     * The speed field
-     */
-    protected SpeedField speedField;
+	/**
+	 * The speed field
+	 */
+	protected SpeedField speedField;
 
-    /**
-     * A temporary variable to hold the current neighbourhood of a point
-     */
-    protected Point[] nhood;
+	/**
+	 * A temporary variable to hold the current neighbourhood of a point
+	 */
+	protected Point[] nhood;
 
-    /**
-     * Number of points in the neighbourhood
-     */
-    protected int nhSize;
+	/**
+	 * Number of points in the neighbourhood
+	 */
+	protected int nhSize;
 
 	/**
 	 * List of classes to notify of iteration progress
@@ -192,11 +192,11 @@ public class FastLevelSet {
 	/**
 	 * Constructor.
 	 * Setup the intermediate matrices.
-     * Initialise phi and the gaussian filter.
+	 * Initialise phi and the gaussian filter.
 	 * @param params Parameters for the level set algorithm
-     * @param im The image to be segmented
-     * @param init The binary initialisation
-     * @param speedf The speed field
+	 * @param im The image to be segmented
+	 * @param init The binary initialisation
+	 * @param speedf The speed field
 	 */
 	public FastLevelSet(Parameters params, ImageProcessor im,
 						BinaryProcessor init, SpeedField speedf) {
@@ -221,10 +221,10 @@ public class FastLevelSet {
 	}
 
 	
-    /**
-     * Segment the image, subject to the maximum iterations
+	/**
+	 * Segment the image, subject to the maximum iterations
 	 * @return true if segmentation completed, false otherwise
-     */
+	 */
 	public boolean segment() {
 		boolean converged = false;
 
@@ -296,9 +296,9 @@ public class FastLevelSet {
 		return true;
 	}
 
-    /**
-     * Evolve once according to the image speed field
-     */
+	/**
+	 * Evolve once according to the image speed field
+	 */
 	protected void evolveSpeed() {
 		/**
 		 * @todo Should we set the speed at the new positions to something else
@@ -332,15 +332,15 @@ public class FastLevelSet {
 			if(speed.get(p.x, p.y) < 0) {
 				switchOut(pi, p);
 			}
-        }
+		}
 
 		flushListAdditions();
-        cleanLout();
+		cleanLout();
 	}
 
-    /**
+	/**
 	 * Evolve once according to the smoothing field
-     */
+	 */
 	protected void evolveSmooth() {
 		Iterator<Point> pi;
 
@@ -369,18 +369,18 @@ public class FastLevelSet {
 		cleanLout();
 	}
 
-    /**
-     * Gets the level-set function phi
-     * @return phi
-     */
-    public Byte2D getPhi() {
+	/**
+	 * Gets the level-set function phi
+	 * @return phi
+	 */
+	public Byte2D getPhi() {
 		return phi;
 	}
 
-    /**
-     * Gets a binary segmentation from phi
-     * @return the segmented image
-     */
+	/**
+	 * Gets a binary segmentation from phi
+	 * @return the segmented image
+	 */
 	public BinaryProcessor getSegmentation() {
 		BinaryProcessor seg = new BinaryProcessor(
 			new ByteProcessor(size.x, size.y));
@@ -392,17 +392,17 @@ public class FastLevelSet {
 		return seg;
 	}
 
-    /**
-     * Has the level-set converged?
-     * In theory we should recalculate the speed field before checking for
-     * convergence, however this may be inefficient so instead the caller must
-     * either do the recalculation or ensure the speed field indicates
-     * non-convergence
-     * @todo Get rid of the convergence check since it probably isn't that
+	/**
+	 * Has the level-set converged?
+	 * In theory we should recalculate the speed field before checking for
+	 * convergence, however this may be inefficient so instead the caller must
+	 * either do the recalculation or ensure the speed field indicates
+	 * non-convergence
+	 * @todo Get rid of the convergence check since it probably isn't that
 	 * useful
-     * @return true if convergence has been reached
-     */
-    protected boolean hasConverged() {
+	 * @return true if convergence has been reached
+	 */
+	protected boolean hasConverged() {
 		// Convergence: speed(Lin) >= 0, speed(Lout) <= 0
 
 		for (Point p : lin) {
@@ -420,10 +420,10 @@ public class FastLevelSet {
 		return true;
 	}
 
-    /**
-     * Initialise phi and create the Gaussian smoothing filter
-     * @param init The binary initialisation
-     */
+	/**
+	 * Initialise phi and create the Gaussian smoothing filter
+	 * @param init The binary initialisation
+	 */
 	protected void initialise(BinaryProcessor init) {
 		/**
 		 * @todo optimise this
@@ -451,10 +451,10 @@ public class FastLevelSet {
 		}
 	}
 
-    /**
-     * Creates the Gaussian filter matrix, scaled up to integers
-     */
-    protected void createGaussFilter() {
+	/**
+	 * Creates the Gaussian filter matrix, scaled up to integers
+	 */
+	protected void createGaussFilter() {
 		int gw = params.gaussWidth;
 		double gs = params.gaussSigma;
 		int s = 2 * gw + 1;
@@ -481,10 +481,10 @@ public class FastLevelSet {
 		gaussFilterThreshold = gfScale / 2;
 	}
 
-    /**
-     * Check everything is consistent
-     */
-    protected void checkConsistency() {
+	/**
+	 * Check everything is consistent
+	 */
+	protected void checkConsistency() {
 		if (!DEBUG_CHECK) {
 			return;
 		}
@@ -560,10 +560,10 @@ public class FastLevelSet {
 		}
 	}
 
-    /**
-     * Calculate the speed at a point, stores it in m_speed
-     */
-    protected void calculateSpeed(Point p) {
+	/**
+	 * Calculate the speed at a point, stores it in m_speed
+	 */
+	protected void calculateSpeed(Point p) {
 		/**
 		 * @todo Remove floating point calculations
 		 */
@@ -571,10 +571,10 @@ public class FastLevelSet {
 		assert speed.get(p.x, p.y) >= -1 && speed.get(p.x, p.y) <= 1;
 	}
 
-    /**
-     * Calculate the smoothing field at a point
-     */
-    protected int calculateSmooth(Point p) {
+	/**
+	 * Calculate the smoothing field at a point
+	 */
+	protected int calculateSmooth(Point p) {
 		// Convolve neighbourhood of a point with a gaussian
 		int gw = params.gaussWidth;
 		int dxmax = Math.min(gw + 1, size.x - p.x);
@@ -595,10 +595,10 @@ public class FastLevelSet {
 		return f;
 	}
 
-    /**
-     * Gets the 4-connected neighbourhood of a point
-     */
-    protected void getNeighbourhood(Point p) {
+	/**
+	 * Gets the 4-connected neighbourhood of a point
+	 */
+	protected void getNeighbourhood(Point p) {
 		/**
 		 * @todo Ignore bounds, and instead check bounds when neighbourhood is
 		 * used?
@@ -689,17 +689,17 @@ public class FastLevelSet {
 	/**
 	 * Identifiers for the two lists of pixels
 	 */
-    protected enum ListType
-    {
-        IN, OUT;
-    };
+	protected enum ListType
+	{
+		IN, OUT;
+	};
 
-    /**
-     * Add a point to the Lin or Lout. The point is added to the current
+	/**
+	 * Add a point to the Lin or Lout. The point is added to the current
 	 * iterator position (note this is different from the C++ version which
 	 * inserts the point at the front of the list.
-     */
-    private void addToList(Point p, ListType ln) {
+	 */
+	private void addToList(Point p, ListType ln) {
 		//IJ.log("addToList: p=(" + p.x + "," + p.y + ") ln=" + ln);
 
 		switch(ln) {
@@ -716,10 +716,10 @@ public class FastLevelSet {
 		}
 	}
 
-    /**
-     * Remove a point from Lin or Lout
-     */
-    private void removeFromList(Iterator<Point> pi, Point p,
+	/**
+	 * Remove a point from Lin or Lout
+	 */
+	private void removeFromList(Iterator<Point> pi, Point p,
 								ListType ln, byte phival) {
 		//IJ.log("removeFromList: p=(" + p.x + "," + p.y + ") ln=" + ln
 		//	   + " phival:" + phival);
@@ -742,21 +742,21 @@ public class FastLevelSet {
 		}
 	}
 
-    /**
-     * Move a point from Lout to the pending Lin additions
-     * Changes speed field at the affected points so that convergence check
-     * will fail
+	/**
+	 * Move a point from Lout to the pending Lin additions
+	 * Changes speed field at the affected points so that convergence check
+	 * will fail
 	 * flushListAdditions() must be called when all iterators are no longer
 	 * required to ensure consistency
-     */
-    private void switchIn(Iterator<Point> pi, Point p) {
+	 */
+	private void switchIn(Iterator<Point> pi, Point p) {
 		//IJ.log("switchIn: p=(" + p.x + "," + p.y + ")");
 		speedField.switchIn(p);
 
 		// 1. Move point from Lout to Lin
 		// 2. Add outside neighbours of p to Lout
 		// 3. Set speed fields to ensure convergence check fails (as the speed
-		//    field will need to be recalculated)
+		//	  field will need to be recalculated)
 		addToList(p, ListType.IN);
 		assert phi.get(p.x, p.y) == -1;
 		speed.set(p.x, p.y, (byte)-1);
@@ -774,21 +774,21 @@ public class FastLevelSet {
 		assert phi.get(p.x, p.y) == -1;
 	}
 
-    /**
-     * Move a point from Lin to the pending Lout additions
-     * Changes speed field at the affected points so that convergence check
-     * will fail
+	/**
+	 * Move a point from Lin to the pending Lout additions
+	 * Changes speed field at the affected points so that convergence check
+	 * will fail
 	 * flushListAdditions() must be called when all iterators are no longer
 	 * required to ensure consistency
-     */
-    private void switchOut(Iterator<Point> pi, Point p) {
+	 */
+	private void switchOut(Iterator<Point> pi, Point p) {
 		//IJ.log("switchOut: p=(" + p.x + "," + p.y + ")");
 		speedField.switchOut(p);
 
 		// 1. Move point from Lin to Lout
 		// 2. Add inside neighbours of p to Lin
 		// 3. Set speed fields to ensure convergence check fails (as the speed
-		//    field will need to be recalculated)
+		//	  field will need to be recalculated)
 		addToList(p, ListType.OUT);
 		assert phi.get(p.x, p.y) == 1;
 		speed.set(p.x, p.y, (byte)1);
@@ -817,10 +817,10 @@ public class FastLevelSet {
 		addlout.clear();
 	}
 
-    /**
-     * Clean up Lin
-     */
-    private void cleanLin() {
+	/**
+	 * Clean up Lin
+	 */
+	private void cleanLin() {
 		Iterator<Point> pi = lin.iterator();
 		while (pi.hasNext()) {
 			Point p = pi.next();
@@ -844,10 +844,10 @@ public class FastLevelSet {
 		}
 	}
 
-    /**
-     * Clean up Lout
-     */
-    private void cleanLout() {
+	/**
+	 * Clean up Lout
+	 */
+	private void cleanLout() {
 		Iterator<Point> pi = lout.iterator();
 		while (pi.hasNext()) {
 			Point p = pi.next();
