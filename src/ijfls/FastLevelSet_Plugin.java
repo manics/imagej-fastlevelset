@@ -209,7 +209,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		GenericDialog gd = new GenericDialog("Fast level set settings");
 		Font font = gd.getFont();
 		font = font.deriveFont((float)(font.getSize2D() * 0.9));
-		int charWidth = 80;
+		int charWidth = 90;
 
 		gd.addMessage(FastLevelSet_PluginStrings.format(
 						  FastLevelSet_PluginStrings.initialisation,
@@ -218,13 +218,13 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		String initMethods[] = Initialiser.getInitialisationMethods();
 		gd.addChoice("Initialisation type", initMethods, initMethods[0]);
 
-		String initCbStr[] = new String[2];
-		initCbStr[0] = "Initialise from previous segmentation (stacks only)";
-		initCbStr[1] = "Display initialisation (in new window)";
-		boolean initCbDef[] = new boolean[2];
-		initCbDef[0] = params.initFromPrevious;
-		initCbDef[1] = params.displayInit;
-		gd.addCheckboxGroup(1, 2, initCbStr, initCbDef);
+		String initCbStr[] = {
+			"Initialise from previous segmentation (stacks only)",
+			"Display initialisation (in new window)"};
+		boolean initCbDef[] = {
+			params.initFromPrevious,
+			params.displayInit};
+		gd.addCheckboxGroup(2, 1, initCbStr, initCbDef);
 
 		gd.addMessage(FastLevelSet_PluginStrings.format(
 						  FastLevelSet_PluginStrings.levelSetParameters,
