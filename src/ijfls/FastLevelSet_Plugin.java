@@ -163,6 +163,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 			ImageStack s = imp.createEmptyStack();
 			s.addSlice(init);
 			impInit = new ImagePlus(imp.getShortTitle() + " Initialisation", s);
+			impInit.setCalibration(imp.getCalibration());
 			impInit.show();
 		}
 		else {
@@ -180,6 +181,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 			ImageStack s = imp.createEmptyStack();
 			s.addSlice(seg);
 			impSeg = new ImagePlus(imp.getShortTitle() + " Segmentation", s);
+			impSeg.setCalibration(imp.getCalibration());
 			impSeg.show();
 		}
 		else {
