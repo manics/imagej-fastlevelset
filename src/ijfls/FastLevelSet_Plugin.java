@@ -68,7 +68,12 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		 * (false)
 		 */
 		public boolean initFromPrevious;
-		
+
+		/**
+		 * Should the initialisation for each slice be displayed?
+		 */
+		public boolean displayInit;
+
 		/**
 		 * Should each iteration of the level set be plotted?
 		 */
@@ -91,6 +96,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 			sfmethod = null;
 			initMethod = null;
 			initFromPrevious = true;
+			displayInit = false;
 			plotProgress = true;			
 
 			lsparams = new FastLevelSet.Parameters();
@@ -135,7 +141,9 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 						imp, im, params.initMethod);
 				}
 
-				updateInitDisplay(init);
+				if (params.displayInit) {
+					updateInitDisplay(init);
+				}
 
 				BinaryProcessor seg = levelset(params, im, init);
 				prevSeg = seg;
@@ -210,8 +218,13 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 		String initMethods[] = Initialiser.getInitialisationMethods();
 		gd.addChoice("Initialisation type", initMethods, initMethods[0]);
 
-		gd.addCheckbox("Initialise from previous segmentation (stacks only)",
-					   params.initFromPrevious);
+		String initCbStr[] = new String[2];
+		initCbStr[0] = "Initialise from previous segmentation (stacks only)";
+		initCbStr[1] = "Display initialisation (in new window)";
+		boolean initCbDef[] = new boolean[2];
+		initCbDef[0] = params.initFromPrevious;
+		initCbDef[1] = params.displayInit;
+		gd.addCheckboxGroup(1, 2, initCbStr, initCbDef);
 
 		gd.addMessage(FastLevelSet_PluginStrings.format(
 						  FastLevelSet_PluginStrings.levelSetParameters,
@@ -249,6 +262,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 		params.initMethod = initMethods[gd.getNextChoiceIndex()];
 		params.initFromPrevious = gd.getNextBoolean();
+		params.displayInit = gd.getNextBoolean();
 
 		lsp.maxIterations = (int)gd.getNextNumber();
 		lsp.speedIterations = (int)gd.getNextNumber();
