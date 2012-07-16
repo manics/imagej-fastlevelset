@@ -64,7 +64,7 @@ public class FastLevelSet_Plugin implements PlugInFilter {
 
 		/**
 		 * Should subsequent frames be initialised from the previous
-		 * segmentation (true) or indenpendently using the specified method
+		 * segmentation (true) or independently using the specified method
 		 * (false)
 		 */
 		public boolean initFromPrevious;
