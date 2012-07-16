@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>FastLevelSet ImageJ Plugin example</title>
+    <style type="text/css">
+      .filename {
+      font-weight:bold;
+      text-decoration:underline;
+      }
+
+      .ijmenu {
+      font-style:oblique;
+      }
+
+      img {
+      float: right;
+      clear: both;
+      padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>FastLevelSet ImageJ plugin</h1>
+
+    <p>Note this plugin is incomplete.</p>
+
+
+    <div>
+      <img src="example-init.jpg" alt="Select a ROI" title="Select a ROI" width="199" height="266" />
+      <img src="example-settings.jpg" alt="Fast level set settings dialog" title="Fast level set settings dialog" width="524" height="551" />
+      <img src="example-iterations.jpg" alt="Intermediate iterations" title="Intermediate iterations" width="199" height="244" />
+      <img src="example-segmentation.jpg" alt="Segmentation window" title="Segmentation window" width="199" height="266" />
+    </div>
+
+    <h2>Installation</h2>
+
+    <ol>
+      <li>Copy <span class="filename">FastLevelSet_Plugin.jar</span> into a subdirectory of your ImageJ plugins directory.</li>
+      <li>If ImageJ is already running then restart (or choose <span class="ijmenu">Help &rarr; Refresh Menus</span>).</li>
+    </ol>
+
+
+    <h2>Example segmentation</h2>
+
+    <ol>
+      <li>Open <span class="filename"><a href="example-his1.tif">example-his1.tif</a></span>. This is a time-lapse image stack.</li>
+      <li>Select a circular region of interest (ROI).</li>
+      <li>Open <span class="ijmenu">Plugins &rarr; [subdirectory] &rarr; Fast level set segmentation</span> in the plugins menu</li>
+      <li>In the <span class="ijmenu">Fast level set settings</span> dialog:
+	<ul>
+	  <li>Keep <span class="ijmenu">Use ROI</span>, this means the ROI created in the previous step will be used for the initialisation. The other values values are the built-in ImageJ auto-thresholder methods.</li>
+	  <li>Change <span class="ijmenu">Iterations</span> to <span class="ijmenu">5</span>. This controls how much the segmentation can evolve from the initialisation.</li>
+	  <li>Change <span class="ijmenu">Field type</span> to <span class="ijmenu">Local region (Hybrid)</span>. <span class="ijmenu">Region Chan-Vese</span> works well when the foreground and background intensities are fairly constant, however for this example we only want to segment one of the objects.</li>
+	</ul>
+      </li>
+      <li>Click on <span class="ijmenu">OK</span>.</li>
+      <li>Two new windows will appear. One window shows the step-by-step evolution of the level-set, the other shows the final segmentation of each frame.</li>
+    </ol>
+
+  </body>
+</html>
