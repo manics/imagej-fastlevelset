@@ -7,7 +7,7 @@
 
   <property name="test.class" value="ijfls.RunPluginWithoutIJ"/>
   <property name="test1.plugin" value="ijfls.FastLevelSet_Plugin"/>
-  <property name="test1.image" value="./im3.tif"/>
+  <property name="test1.image" value="./doc/example-his1.tif"/>
   <property name="test2.plugin" value="ijfls.ConnectedComponents_Plugin"/>
   <property name="test2.image" value="./im3-seg.tif"/>
 
