@@ -23,7 +23,7 @@ public class ConnectSlices {
 	/**
 	 * A slice index and a label
 	 */
-	private class SliceLabel implements Comparable {
+	private class SliceLabel implements Comparable<SliceLabel> {
 		/**
 		 * The slice index
 		 */
@@ -44,8 +44,7 @@ public class ConnectSlices {
 			this.label = label;
 		}
 
-		public int compareTo(Object o) {
-			SliceLabel sl = (SliceLabel)o;
+		public int compareTo(SliceLabel sl) {
 			if (slice < sl.slice || (slice == sl.slice && label < sl.label)) {
 				return -1;
 			}
