@@ -1,4 +1,4 @@
-<project name="FastLevelSet_Plugin" basedir="." default="compile">
+<project name="FastLevelSet_Plugin" basedir="." default="jar">
   <property name="src.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="classes.dir" value="${build.dir}/classes"/>
