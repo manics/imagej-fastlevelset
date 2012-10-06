@@ -18,6 +18,11 @@ public class Initialiser {
 	private static final String useRoiStr = "Use ROI";
 
 	/**
+	 * The string used to prefix image titles
+	 */
+	private static final String imagePrefix = "Image: ";
+
+	/**
 	 * Create an initialisation image
 	 * @param imp The ImagePlus object holding the image to be thresholded
 	 *        (needed because ROIs seem to be attached to this)
@@ -31,6 +36,9 @@ public class Initialiser {
 
 		if (method == useRoiStr) {
 			init =	initFromRoi(imp);
+		}
+		else if (method.startsWith(imagePrefix)) {
+			init = initFromBinaryImage(method.substring(imagePrefix.length()));
 		}
 		else {
 			init = autoThreshold(im, method);
@@ -48,6 +56,10 @@ public class Initialiser {
 		methods.add(useRoiStr);
 		for (String s : AutoThresholder.getMethods()) {
 			methods.add(s);
+		}
+
+		for (String s : getOpenImageTitles()) {
+			methods.add(imagePrefix + s);
 		}
 
 		return methods.toArray(new String[0]);
@@ -107,6 +119,45 @@ public class Initialiser {
 		}
 
 		return new BinaryProcessor(init);
+	}
+
+	/**
+	 * Get a list of open images that can be used as an initialisation
+	 * @return an array of image titles
+	 */
+	private static String[] getOpenImageTitles() {
+		int[] windowIds = WindowManager.getIDList();
+		String[] titles = new String[windowIds.length];
+
+		for (int i = 0; i < windowIds.length; ++i) {
+			titles[i] = WindowManager.getImage(windowIds[i]).getTitle();
+		}
+
+		return titles;
+	}
+
+	/**
+	 * Create an initialisation image from an existing ImageJ window
+	 * @param imageTitle: The title of the ImageJ window holding a single
+	 *        (non-stack) binary image
+	 * @return The binary initialisation
+	 * @todo Consistent handling of binary images
+	 */
+	private static BinaryProcessor initFromBinaryImage(String imageTitle) {
+		ImagePlus imp = WindowManager.getImage(imageTitle);
+
+		if (imp == null || imp.getImageStackSize() != 1 ||
+			!imp.getProcessor().isBinary()) {
+			IJ.error("Initialisation image must be a single binary image");
+			return null;
+		}
+
+		ImageProcessor im = imp.getProcessor();
+		if (imp.getType() != ImagePlus.GRAY8) {
+			im = im.convertToByte(false);
+		}
+
+		return new BinaryProcessor((ByteProcessor)im);
 	}
 
 }
