@@ -5,7 +5,7 @@ package ijfls;
  */
 class FastLevelSet_PluginStrings {
 	public static String initialisation =
-		"The level set requires an initialisation. You can either specify this as one or more ROIs on the image or you can use one of the following auto-thresholding methods.";
+		"The level set requires an initialisation. You can either specify this as one or more ROIs on the image, one of the following auto-thresholding methods, or a previously opened binary image.";
 
 	public static String levelSetParameters =
 		"The level set works by starting from the initialisation and iteratively growing/shrinking the boundary. If the initialisation is quite far from the actual boundary then increase 'Iterations' and/or 'Speed sub iterations'. If the boundary is too jagged then increase 'Smooth sub-iterations' and/or decrease 'Speed sub-iterations' to vary the smoothness of the segmentation boundary, and vice-versa. The greater the number of iterations the longer this algorithm will take to run.";
