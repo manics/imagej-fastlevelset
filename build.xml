@@ -3,7 +3,7 @@
   <property name="build.dir" value="build"/>
   <property name="classes.dir" value="${build.dir}/classes"/>
   <property name="jar.dir" value="${build.dir}/jar"/>
-  <property name="imagej.dir" value="/opt/sas/ImageJ"/>
+  <property name="imagej.jardir" value="/opt/sas/Fiji.app/jars"/>
 
   <property name="test.class" value="ijfls.RunPluginWithoutIJ"/>
   <property name="test1.plugin" value="ijfls.FastLevelSet_Plugin"/>
@@ -12,7 +12,8 @@
   <property name="test2.image" value="./im3-seg.tif"/>
 
   <path id="classpath">
-    <fileset dir="${imagej.dir}" includes="*.jar"/>
+    <!--fileset dir="${imagej.jardir}" includes="*.jar"/-->
+    <fileset dir="${imagej.jardir}" includes="ij.jar"/>
   </path>
 
   <target name="clean">
